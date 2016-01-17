@@ -61,6 +61,15 @@ class Rating extends \lo\core\db\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public function metaClass()
+    {
+        return RatingMeta::className();
+    }
+
+
+    /**
      * @param string $model_name Name of model
      * @return integer|false Id corresponding model or false if matches not found
      */

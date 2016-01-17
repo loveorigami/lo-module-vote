@@ -5,9 +5,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause
  */
 
-namespace chiliec\vote;
+namespace lo\modules\vote;
 
-use chiliec\vote\models\Rating;
+use lo\modules\vote\models\Rating;
 use yii\base\InvalidParamException;
 use yii\base\Widget;
 use yii\helpers\Html;
