@@ -1,0 +1,26 @@
+{
+    "name": loveorigami/lo-module-vote",
+    "description": "Provides anonymous voting for any models",
+    "keywords": ["vote", "anonymous", "voting"],
+    "type": "yii2-extension",
+    "license": "BSD-3-Clause",
+    "support": {
+        "source": "https://bitbucket.org/loveorigami/lo-module-vote"
+    },
+    "authors": [
+        {
+            "name": "Andrey Lukyanov",
+            "email": "loveorigami@mail.ru",
+            "homepage": "http://loveorigami.info",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "lo\\modules\\vote\\": ""
+        }
+    }
+}
