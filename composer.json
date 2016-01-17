@@ -1,5 +1,5 @@
 {
-    "name": loveorigami/lo-module-vote",
+    "name": "loveorigami/lo-module-vote",
     "description": "Provides anonymous voting for any models",
     "keywords": ["vote", "anonymous", "voting"],
     "type": "yii2-extension",
