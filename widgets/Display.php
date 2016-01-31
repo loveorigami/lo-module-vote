@@ -5,7 +5,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause
  */
 
-namespace lo\modules\vote;
+namespace lo\modules\vote\widgets;
 
 use lo\modules\vote\models\Rating;
 use yii\base\InvalidParamException;
@@ -106,6 +106,7 @@ class Display extends Widget
     public function init()
     {
         parent::init();
+		DisplayAsset::register($this->view);
         if (!isset($this->model_name) or !isset($this->target_id)) {
             throw new InvalidParamException(Yii::t('vote', 'model_name or target_id not configurated'));
         }
