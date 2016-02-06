@@ -16,24 +16,24 @@ class Module extends \yii\base\Module
      * Is allow vote for guests
      * @var bool
      */
-    public $allow_guests = true;
+    public $allowGuests = true;
 
     /**
      * Is allow change votes
      * @var bool
      */
-    public $allow_change_vote = true;
+    public $allowChangeVote = true;
 
     /**
      * Matching models with ids
      * @var array
      */
-    public $matchingModels;
+    public $models;
 
     public function init()
     {
         parent::init();
-        if (!isset($this->matchingModels)) {
+        if (!isset($this->models)) {
             throw new InvalidConfigException('matchingModels not configurated');
         }
         if (empty(Yii::$app->i18n->translations['vote'])) {

@@ -4,14 +4,15 @@ return [
     'modules' => [
         'vote' => [
             'class' => 'lo\modules\vote\Module',
-            'allow_guests' => false, // if true will check IP, otherwise - UserID
-            'allow_change_vote' => true, // if true vote can be changed
-            'matchingModels' => [ // matching model names with whatever unique integer ID
-                'origami' => 2, // may be just integer value
-                'aphorism' => 3, // may be just integer value
+            'allowGuests' => false, // if true will check IP, otherwise - UserID
+            'allowChangeVote' => true, // if true vote can be changed
+            'models' => [ // matching model names with whatever unique integer ID
+                3 => [
+					'modelName' => 'lo\modules\love\models\Aphorism',
+					'allowGuests' => false,
+					'allowChangeVote' => true
+				] 
                 //'lo\modules\love\models\Aphorism' => 3, // or array with 'id' key
-                //'story' => ['id'=>4, 'allow_guests'=>false], // own value 'allow_guests'
-                //'world' => ['id'=>5, 'allow_guests'=>false, 'allow_change_vote'=>false],
             ],
         ],
     ],

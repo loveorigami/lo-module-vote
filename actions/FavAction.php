@@ -2,13 +2,14 @@
 
 namespace lo\modules\vote\actions;
 
+use lo\modules\vote\models\Favorites;
 use lo\modules\vote\models\Rating;
 use yii\base\Action;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\Response;
 use Yii;
 
-class VoteAction extends Action
+class FavAction extends Action
 {
     public function run()
     {
@@ -21,10 +22,10 @@ class VoteAction extends Action
                 return ['content' => Yii::t('vote', 'The purpose is not defined')];
             }
             $act = Yii::$app->request->post('act');
-            if (!in_array($act, ['like', 'dislike'], true)) {
+            if (!in_array($act, ['fav'], true)) {
                 return ['content' => Yii::t('vote', 'Wrong action')];
             }
-            $value = $act === 'like' ? Rating::VOTE_LIKE : Rating::VOTE_DISLIKE;
+
             $userId = Yii::$app->user->getId();
             if ($userId === null && !Rating::getIsAllowGuests($modelId)) {
                 return ['content' => Yii::t('vote', 'Guests are not allowed to vote')];
@@ -35,37 +36,26 @@ class VoteAction extends Action
             if (!is_int($modelId)) {
                 return ['content' => Yii::t('vote', 'The model is not registered')];
             }
+
             if (Rating::getIsAllowGuests($modelId)) {
-                $isVoted = Rating::findOne(['model_id' => $modelId, 'target_id' => $targetId, 'user_ip' => $userIp]);
+                $isVoted = Favorites::findOne(['model_id' => $modelId, 'target_id' => $targetId, 'user_ip' => $userIp]);
             } else {
-                $isVoted = Rating::findOne(['model_id' => $modelId, 'target_id' => $targetId, 'user_id' => $userId]);
+                $isVoted = Favorites::findOne(['model_id' => $modelId, 'target_id' => $targetId, 'user_id' => $userId]);
             }
+
             if (is_null($isVoted)) {
-                $newVote = new Rating;
+                $newVote = new Favorites;
                 $newVote->model_id = $modelId;
                 $newVote->target_id = $targetId;
                 $newVote->user_id = $userId;
                 $newVote->user_ip = $userIp;
-                $newVote->value = $value;
                 if ($newVote->save()) {
-                    if ($value === Rating::VOTE_LIKE) {
-                        return ['content' => Yii::t('vote', 'Your vote is accepted. Thanks!'), 'success' => true];
-                    } else {
-                        return ['content' => Yii::t('vote', 'Thanks for your opinion'), 'success' => true];
-                    }
+                    return ['content' => Yii::t('vote', 'Iten added to our favorites'), 'success' => true];
                 } else {
                     return ['content' => Yii::t('vote', 'Validation error')];
                 }
             } else {
-                if ($isVoted->value !== $value && Rating::getIsAllowChangeVote($modelId)) {
-                    $isVoted->value = $value;
-                    if ($isVoted->save()) {
-                        return ['content' => Yii::t('vote', 'Your vote has been changed. Thanks!'), 'success' => true, 'changed' => true];
-                    } else {
-                        return ['content' => Yii::t('vote', 'Validation error')];
-                    }
-                }
-                return ['content' => Yii::t('vote', 'You have already voted!')];
+                return ['content' => Yii::t('vote', 'You have already added to favorites!')];
             }
         } else {
             throw new MethodNotAllowedHttpException(Yii::t('vote', 'Forbidden method'), 405);

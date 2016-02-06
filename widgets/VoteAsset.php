@@ -5,12 +5,12 @@ namespace lo\modules\vote\widgets;
 use yii\web\AssetBundle;
 
 /**
- * Class BlockAsset
- * Ассет виджета скрываемой области
+ * Class VoteAsset
+ * Ассет виджета голосования
  * @package lo\modules\vote\widgets
  * @author Lukyanov Andrey <loveorigami@mail.ru>
  */
-class DisplayAsset extends AssetBundle
+class VoteAsset extends AssetBundle
 {
 
     public $js = [

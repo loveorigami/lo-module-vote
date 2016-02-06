@@ -1,9 +1,9 @@
 <?php
 use console\db\Migration;
 
-class m150102_164631_create_rating_table extends Migration
+class m150102_164632_create_fav_table extends Migration
 {
-    protected $tableName = '{{%rating__votes}}';
+    protected $tableName = '{{%rating__favs}}';
 
     public function up()
     {
@@ -20,7 +20,6 @@ class m150102_164631_create_rating_table extends Migration
             'target_id' => $this->integer()->notNull(),
             'user_id' => $this->integer()->notNull()->defaultValue(0),
 			'user_ip' => $this->string(39)->notNull(),
-            'value' => $this->boolean()->notNull(),
         ]);
 		
 		$this->createIndex('rating_model_id_target_id', $this->tableName, ['model_id', 'target_id'], false);

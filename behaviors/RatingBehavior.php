@@ -3,45 +3,87 @@
 namespace lo\modules\vote\behaviors;
 
 use lo\modules\vote\models\Rating;
+use lo\modules\vote\models\AggregateRating;
 use yii\db\ActiveRecord;
 use yii\base\Behavior;
+use yii\base\InvalidConfigException;
+use yii\db\ActiveQuery;
 
 class RatingBehavior extends Behavior
 {
     /**
-     * @var string Name of model
+     * @inheritdoc
      */
-    public $model_name;
-
-    /**
-     * @var string Field for rating in database
-     */
-    public $rating_field = 'rating';
-
-    /**
-     * @var string Field for aggregate_rating in database
-     */
-    public $aggregate_rating_field = 'aggregate_rating';
-
-    public function events()
+    public function attach($owner)
     {
-        return [
-            ActiveRecord::EVENT_AFTER_FIND => 'afterFind',
-        ];
+        if (!$owner instanceof ActiveRecord) {
+            throw new InvalidConfigException(Yii::t('vote', 'Please attach this behavior to the instance of the ActiveRecord class'));
+        }
+        parent::attach($owner);
     }
 
-    public function afterFind($event)
+    /**
+     * @inheritdoc
+     */
+    public function getLikes()
     {
-        if ($received_rating = Rating::getRating($this->model_name, $this->owner->{$this->owner->primaryKey()[0]})) {
-            $rating = $received_rating['likes'] - $received_rating['dislikes'];
-            $aggregate_rating = $received_rating['aggregate_rating'];
-            if (($this->owner->{$this->rating_field} != $rating) or ($this->owner->{$this->aggregate_rating_field} != $aggregate_rating)) {
-                \Yii::$app->db->createCommand()->update(
-                    $this->owner->tableName(),
-                    [$this->rating_field => $rating, $this->aggregate_rating_field => $aggregate_rating],
-                    [$this->owner->primaryKey()[0] => $this->owner->{$this->owner->primaryKey()[0]}]
-                )->execute();
-            }
-        }
+        return $this->owner
+            ->hasOne(AggregateRating::className(), [
+                'target_id' => $this->owner->primaryKey()[0],
+            ])
+            ->select('likes')
+            ->where('model_id = :modelId', [
+                ':modelId' => Rating::getModelIdByName($this->owner->className())
+            ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDislikes()
+    {
+        return $this->owner
+            ->hasOne(AggregateRating::className(), [
+                'target_id' => $this->owner->primaryKey()[0],
+            ])
+            ->select('dislikes')
+            ->where('model_id = :modelId', [
+                ':modelId' => Rating::getModelIdByName($this->owner->className())
+            ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRating()
+    {
+        return $this->owner
+            ->hasOne(AggregateRating::className(), [
+                'target_id' => $this->owner->primaryKey()[0],
+            ])->onCondition(['model_id' => Rating::getModelIdByName($this->owner->className())]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLikesCount()
+    {
+        return $this->likes->scalar();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDislikesCount()
+    {
+        return $this->dislikes->scalar();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRatingNumber()
+    {
+        return $this->rating->scalar();
     }
 }

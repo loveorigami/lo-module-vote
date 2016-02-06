@@ -1,4 +1,9 @@
 <?php
+/**
+ * @link https://github.com/Chiliec/yii2-vote
+ * @author Vladimir Babin <vovababin@gmail.com>
+ * @license http://opensource.org/licenses/BSD-3-Clause
+ */
 
 return [
     'The user is not recognized' => 'Пользователь не распознан',
@@ -12,8 +17,8 @@ return [
     'Validation error' => 'Ошибка валидации',
     'You have already voted!' => 'Вы уже голосовали!',
     'Forbidden method' => 'Запрещенный метод',
-    'Aggregate rating' => 'Совокупный рейтинг',
-    'Model name has not been sent' => 'Не передано имя модели',
+    'Aggregate rating' => 'рейтинг',
+    'modelId has not been sent' => 'Не передано id модели',
     'Target id has not been sent' => 'Не передано id цели',
-    'model_name or target_id not configurated' => 'Имя модели или цели не задано',
+    'Model not configurated' => 'Модель не задана',
 ];

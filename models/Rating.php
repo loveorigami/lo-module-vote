@@ -24,12 +24,15 @@ class Rating extends \lo\core\db\ActiveRecord
     const STATUS_DRAFT = 0;
     const STATUS_PUBLISHED = 1;
 	
+	const VOTE_LIKE = 1;
+    const VOTE_DISLIKE = 0;
+	
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return '{{%rating}}';
+        return '{{%rating__votes}}';
     }
 
     /**
@@ -68,65 +71,95 @@ class Rating extends \lo\core\db\ActiveRecord
         return RatingMeta::className();
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        Yii::$app->cache->delete('rating' . $this->attributes['model_id'] .
+            'target' . $this->attributes['target_id']);
+        static::updateRating($this->attributes['model_id'], $this->attributes['target_id']);
+        parent::afterSave($insert, $changedAttributes);
+    }
 
     /**
-     * @param string $model_name Name of model
+     * @param string $modelName Name of model
      * @return integer|false Id corresponding model or false if matches not found
      */
-    public static function getModelIdByName($model_name)
+    public static function getModelIdByName($modelName)
     {
-        $matchingModels = Yii::$app->getModule('vote')->matchingModels;
-        if (isset($matchingModels[$model_name]['id'])) {
-            return $matchingModels[$model_name]['id'];
-        }
-        if (isset($matchingModels[$model_name])) {
-            return $matchingModels[$model_name];
+        if (null !== $models = Yii::$app->getModule('vote')->models) {
+            $modelId = array_search($modelName, $models);
+            if (is_int($modelId)) {
+                return $modelId;
+            }
+            foreach ($models as $key => $value) {
+                if (!is_array($value)) {
+                    continue;
+                }
+                if ($value['modelName'] === $modelName) {
+                    return $key;
+                }
+            }
         }
         return false;
     }
 
     /**
-     * @param string $model_name Name of model
+     * @param integer $modelId Id of model
+     * @return string|false Model name or false if matches not found
+     */
+    public static function getModelNameById($modelId)
+    {
+        if (null !== $models = Yii::$app->getModule('vote')->models) {
+            if (isset($models[$modelId])) {
+                if (is_array($models[$modelId])) {
+                    return $models[$modelId]['modelName'];
+                } else {
+                    return $models[$modelId];
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param integer $modelId Id of model
      * @return boolean Checks exists permission for guest voting in model params or return global value
      */
-    public static function getIsAllowGuests($model_name)
+    public static function getIsAllowGuests($modelId)
     {
-        $matchingModels = Yii::$app->getModule('vote')->matchingModels;
-        if (isset($matchingModels[$model_name]['allow_guests'])) {
-            return $matchingModels[$model_name]['allow_guests'];
+        $models = Yii::$app->getModule('vote')->models;
+        if (isset($models[$modelId]['allowGuests'])) {
+            return $models[$modelId]['allowGuests'];
         }
-        return Yii::$app->getModule('vote')->allow_guests;
+        return Yii::$app->getModule('vote')->allowGuests;
     }
 
     /**
-     * @param string $model_name Name of model
+     * @param string $modelId Id of model
      * @return boolean Checks exists permission for change vote in model params or return global value
      */
-    public static function getIsAllowChangeVote($model_name)
+    public static function getIsAllowChangeVote($modelId)
     {
-        $matchingModels = Yii::$app->getModule('vote')->matchingModels;
-        if (isset($matchingModels[$model_name]['allow_change_vote'])) {
-            return $matchingModels[$model_name]['allow_change_vote'];
+        $models = Yii::$app->getModule('vote')->models;
+        if (isset($models[$modelId]['allowChangeVote'])) {
+            return $models[$modelId]['allowChangeVote'];
         }
-        return Yii::$app->getModule('vote')->allow_change_vote;
+        return Yii::$app->getModule('vote')->allowChangeVote;
     }
 
     /**
-     * @param string $model_name Name of model
-     * @param integer $target_id Current value of primary key
-     * @return array ['likes', 'dislikes', 'aggregate_rating']
+     * @param string $modelId Id of model
+     * @param integer $targetId Current value of primary key
      */
-    public static function getRating($model_name, $target_id)
+    public static function updateRating($modelId, $targetId)
     {
-        $model_id = self::getModelIdByName($model_name);
-        if (!is_int($model_id)) {
-            throw new InvalidParamException(Yii::t('vote', 'The model is not registered'));
-        }
-        $result = Yii::$app->cache->get('rating'.$model_name.$target_id);
-        if ($result === false) {
-            $likes = self::find()->where(['model_id'=>$model_id, 'target_id'=>$target_id, 'value'=>1])->count();
-            $dislikes = self::find()->where(['model_id'=>$model_id, 'target_id'=>$target_id, 'value'=>0])->count();
-            if ($likes+$dislikes != 0) {
+        $cacheKey = 'rating' . $modelId . 'target' . $targetId;
+        if (Yii::$app->cache->get($cacheKey) === false) {
+            $likes = static::find()->where(['model_id' => $modelId, 'target_id' => $targetId, 'value' => self::VOTE_LIKE])->count();
+            $dislikes = static::find()->where(['model_id' => $modelId, 'target_id' => $targetId, 'value' => self::VOTE_DISLIKE])->count();
+            if ($likes + $dislikes !== 0) {
                 // Рейтинг = Нижняя граница доверительного интервала Вильсона (Wilson) для параметра Бернулли
                 // http://habrahabr.ru/company/darudar/blog/143188/
                 $rating = (($likes + 1.9208) / ($likes + $dislikes) - 1.96 * SQRT(($likes * $dislikes)
@@ -134,11 +167,22 @@ class Rating extends \lo\core\db\ActiveRecord
             } else {
                 $rating = 0;
             }
-            $rating = round($rating*10, 2);
-            $result = ['likes'=>$likes, 'dislikes'=>$dislikes, 'aggregate_rating'=>$rating];
-            Yii::$app->cache->set('rating'.$model_name.$target_id, $result);
+            $rating = round($rating * 10, 2);
+            $aggregateModel = AggregateRating::findOne([
+                'model_id' => $modelId,
+                'target_id' => $targetId,
+            ]);
+            if (null === $aggregateModel) {
+                $aggregateModel = new AggregateRating;
+                $aggregateModel->model_id = $modelId;
+                $aggregateModel->target_id = $targetId;
+            }
+            $aggregateModel->likes = $likes;
+            $aggregateModel->dislikes = $dislikes;
+            $aggregateModel->rating = $rating;
+            $aggregateModel->save();
+            Yii::$app->cache->set($cacheKey, true);
         }
-        return $result;
     }
 
     /**
@@ -168,7 +212,8 @@ class Rating extends \lo\core\db\ActiveRecord
      * @param string $str
      * @return string $ip
      */
-    public static function expandIp($str) {
+    public static function expandIp($str) 
+    {
         if (strlen($str) == 16 OR strlen($str) == 4) {
             return inet_ntop(pack("A".strlen($str), $str));
         }
