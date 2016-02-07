@@ -6,15 +6,15 @@
                  data-original-title="добавить в избранное"
                  data-toggle="tooltip"
                  onclick="fav(<?= $modelId ?>, <?= $targetId ?>, 'fav-add'); return false;">
-                <i class="fa fa-heart"></i> <span class="votes"> <?= $favs ?></span>
+                <i class="fa fa-star"></i> <span class="votes"> <?= $favs ?></span>
             </div>
         <?php else: ?>
             <div id="fav-<?= $modelId ?>-<?= $targetId ?>"
-                 class="btn btn-danger btn-xs"
+                 class="btn btn-warning btn-xs"
                  data-original-title="удалить из избранного"
                  data-toggle="tooltip"
                  onclick="return confirm('вы уверены?') ? fav(<?= $modelId ?>, <?= $targetId ?>, 'fav-del') : false;">
-                <i class="fa fa-minus"></i> <span class="votes"> <?= $favs ?></span>
+                <i class="fa fa-star-o"></i> <span class="votes"> <?= $favs ?></span>
             </div>
         <?php endif; ?>
         <div id="vote-up-<?= $modelId ?>-<?= $targetId ?>"

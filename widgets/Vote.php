@@ -32,7 +32,7 @@ class Vote extends Widget
     /**
      * @var bool
      */
-    public $showAggregateRating = true;
+    public $showAggregateRating = false;
 
     /**
      * @var string
@@ -60,7 +60,10 @@ class Vote extends Widget
      * @var string
      */
     public $jsShowMessage = "
-        jQuery('#vote-response-' + model + '-' + target).html(data.content);
+        var n = Noty('vote');
+        $.noty.setText(n.options.id, data.content);
+        $.noty.setType(n.options.id, data.type);
+        //jQuery('#vote-response-' + model + '-' + target).html(data.content);
     ";
 
     /**

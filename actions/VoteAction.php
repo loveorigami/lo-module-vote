@@ -49,23 +49,23 @@ class VoteAction extends Action
                 $newVote->value = $value;
                 if ($newVote->save()) {
                     if ($value === Rating::VOTE_LIKE) {
-                        return ['content' => Yii::t('vote', 'Your vote is accepted. Thanks!'), 'success' => true];
+                        return ['content' => Yii::t('vote', 'Your vote is accepted. Thanks!'), 'type'=>'success', 'success' => true];
                     } else {
-                        return ['content' => Yii::t('vote', 'Thanks for your opinion'), 'success' => true];
+                        return ['content' => Yii::t('vote', 'Thanks for your opinion'), 'type'=>'success', 'success' => true];
                     }
                 } else {
-                    return ['content' => Yii::t('vote', 'Validation error')];
+                    return ['content' => Yii::t('vote', 'Validation error'), 'type'=>'error'];
                 }
             } else {
                 if ($isVoted->value !== $value && Rating::getIsAllowChangeVote($modelId)) {
                     $isVoted->value = $value;
                     if ($isVoted->save()) {
-                        return ['content' => Yii::t('vote', 'Your vote has been changed. Thanks!'), 'success' => true, 'changed' => true];
+                        return ['content' => Yii::t('vote', 'Your vote has been changed. Thanks!'), 'type'=>'success','success' => true, 'changed' => true];
                     } else {
-                        return ['content' => Yii::t('vote', 'Validation error')];
+                        return ['content' => Yii::t('vote', 'Validation error'), 'type'=>'error'];
                     }
                 }
-                return ['content' => Yii::t('vote', 'You have already voted!')];
+                return ['content' => Yii::t('vote', 'You have already voted!'), 'type'=>'warning'];
             }
         } else {
             throw new MethodNotAllowedHttpException(Yii::t('vote', 'Forbidden method'), 405);

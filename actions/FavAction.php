@@ -46,7 +46,7 @@ class FavAction extends Action
 
             if(!is_null($isVoted) && $act == 'fav-del'){
                 $isVoted->delete();
-                return ['content' => Yii::t('vote', 'Item delete from our favorites'), 'success' => true];
+                return ['content' => Yii::t('vote', 'Item delete from our favorites'), 'type'=>'success', 'success' => true];
             }
 
             if (is_null($isVoted)) {
@@ -56,12 +56,12 @@ class FavAction extends Action
                 $newVote->user_id = $userId;
                 $newVote->user_ip = $userIp;
                 if ($newVote->save()) {
-                    return ['content' => Yii::t('vote', 'Item added to our favorites'), 'success' => true];
+                    return ['content' => Yii::t('vote', 'Item added to our favorites'), 'type'=>'success', 'success' => true];
                 } else {
-                    return ['content' => Yii::t('vote', 'Validation error')];
+                    return ['content' => Yii::t('vote', 'Validation error'), 'type'=>'warning'];
                 }
             } else {
-                return ['content' => Yii::t('vote', 'You have already added to favorites!')];
+                return ['content' => Yii::t('vote', 'You have already added to favorites!'), 'type'=>'warning'];
             }
         } else {
             throw new MethodNotAllowedHttpException(Yii::t('vote', 'Forbidden method'), 405);

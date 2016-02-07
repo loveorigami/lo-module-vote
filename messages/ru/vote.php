@@ -24,5 +24,5 @@ return [
 
     'Item added to our favorites' => 'Запись добавлена в избранное',
     'You have already added to favorites!' => 'Запись уже добавлена в избранное',
-
+    'Item delete from our favorites' => 'Запись удалена из избранного',
 ];
