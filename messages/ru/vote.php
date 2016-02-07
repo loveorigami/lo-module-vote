@@ -21,4 +21,8 @@ return [
     'modelId has not been sent' => 'Не передано id модели',
     'Target id has not been sent' => 'Не передано id цели',
     'Model not configurated' => 'Модель не задана',
+
+    'Item added to our favorites' => 'Запись добавлена в избранное',
+    'You have already added to favorites!' => 'Запись уже добавлена в избранное',
+
 ];

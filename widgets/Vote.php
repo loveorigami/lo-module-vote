@@ -18,7 +18,7 @@ use Yii;
 
 class Vote extends Widget
 {
-   /**
+    /**
      * @var ActiveRecord
      */
     public $model;
@@ -94,8 +94,8 @@ class Vote extends Widget
     public function init()
     {
         parent::init();
-		VoteAsset::register($this->view);
-		
+        VoteAsset::register($this->view);
+
         if (!isset($this->model)) {
             throw new InvalidParamException(Yii::t('vote', 'Model not configurated'));
         }
@@ -140,10 +140,10 @@ class Vote extends Widget
         return $this->render('vote', [
             'modelId' => Rating::getModelIdByName($this->model->className()),
             'targetId' => $this->model->{$this->model->primaryKey()[0]},
-            'likes' => $this->model->rating->likes,
-            'dislikes' => $this->model->rating->dislikes,
-            'favs' => $this->model->rating->favs,
-            'rating' => $this->model->rating->rating,
+            'likes' => $this->model->aggregate->likes ?: 0,
+            'dislikes' => $this->model->aggregate->dislikes ?: 0,
+            'favs' => $this->model->aggregate->favs ?: 0,
+            'rating' => $this->model->aggregate->rating ?: 0,
             'showAggregateRating' => $this->showAggregateRating,
         ]);
     }

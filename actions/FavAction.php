@@ -50,7 +50,7 @@ class FavAction extends Action
                 $newVote->user_id = $userId;
                 $newVote->user_ip = $userIp;
                 if ($newVote->save()) {
-                    return ['content' => Yii::t('vote', 'Iten added to our favorites'), 'success' => true];
+                    return ['content' => Yii::t('vote', 'Item added to our favorites'), 'success' => true];
                 } else {
                     return ['content' => Yii::t('vote', 'Validation error')];
                 }
