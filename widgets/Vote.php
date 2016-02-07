@@ -73,8 +73,10 @@ class Vote extends Widget
             var idUp = '#vote-up-' + model + '-' + target + ' span';
             var idDown = '#vote-down-' + model + '-' + target + ' span';
 
-            if (act === 'fav') {
+            if (act === 'fav-add') {
                 jQuery(idFav).text(parseInt(jQuery(idFav).text()) + 1);
+            } else if (act === 'fav-del') {
+                jQuery(idUp).text(parseInt(jQuery(idFav).text()) - 1);
             } else if (act === 'like') {
                 jQuery(idUp).text(parseInt(jQuery(idUp).text()) + 1);
             } else {
@@ -145,6 +147,8 @@ class Vote extends Widget
             'favs' => $this->model->aggregate->favs ?: 0,
             'rating' => $this->model->aggregate->rating ?: 0,
             'showAggregateRating' => $this->showAggregateRating,
+            //'voted' => $this->model->voted->id,
+            'faved' => $this->model->faved->id,
         ]);
     }
 }

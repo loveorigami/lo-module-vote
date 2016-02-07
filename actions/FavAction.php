@@ -22,7 +22,7 @@ class FavAction extends Action
                 return ['content' => Yii::t('vote', 'The purpose is not defined')];
             }
             $act = Yii::$app->request->post('act');
-            if (!in_array($act, ['fav'], true)) {
+            if (!in_array($act, ['fav-add', 'fav-del'], true)) {
                 return ['content' => Yii::t('vote', 'Wrong action')];
             }
 
@@ -41,6 +41,12 @@ class FavAction extends Action
                 $isVoted = Favorites::findOne(['model_id' => $modelId, 'target_id' => $targetId, 'user_ip' => $userIp]);
             } else {
                 $isVoted = Favorites::findOne(['model_id' => $modelId, 'target_id' => $targetId, 'user_id' => $userId]);
+            }
+
+
+            if(!is_null($isVoted) && $act == 'fav-del'){
+                $isVoted->delete();
+                return ['content' => Yii::t('vote', 'Item delete from our favorites'), 'success' => true];
             }
 
             if (is_null($isVoted)) {

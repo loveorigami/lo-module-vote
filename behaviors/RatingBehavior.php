@@ -3,6 +3,7 @@
 namespace lo\modules\vote\behaviors;
 
 use lo\modules\vote\models\Rating;
+use lo\modules\vote\models\Favorites;
 use lo\modules\vote\models\AggregateRating;
 use yii\db\ActiveRecord;
 use yii\base\Behavior;
@@ -33,6 +34,38 @@ class RatingBehavior extends Behavior
             ])
             ->onCondition([
                 'model_id' => Rating::getModelIdByName($this->owner->className())
+            ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getVoted()
+    {
+        return $this->owner
+            ->hasOne(Rating::className(), [
+                'target_id' => $this->owner->primaryKey()[0],
+            ])
+            ->from(Rating::tableName() . ' r')
+            ->onCondition([
+                'r.model_id' => Rating::getModelIdByName($this->owner->className()),
+                'r.user_id' => \Yii::$app->user->id,
+            ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFaved()
+    {
+        return $this->owner
+            ->hasOne(Favorites::className(), [
+                'target_id' => $this->owner->primaryKey()[0],
+            ])
+            ->from(Favorites::tableName() . ' f')
+            ->onCondition([
+                'f.model_id' => Rating::getModelIdByName($this->owner->className()),
+                'f.user_id' => \Yii::$app->user->id,
             ]);
     }
 
