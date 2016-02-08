@@ -181,7 +181,7 @@ class Rating extends \lo\core\db\ActiveRecord
             $aggregateModel->dislikes = $dislikes;
             $aggregateModel->rating = $rating;
             $aggregateModel->save();
-            Yii::$app->cache->set($cacheKey, true);
+            //Yii::$app->cache->set($cacheKey, true);
        // }
     }
 

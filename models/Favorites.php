@@ -100,7 +100,7 @@ class Favorites extends  \lo\core\db\ActiveRecord
             }
             $aggregateModel->favs = $favs;
             $aggregateModel->save();
-            Yii::$app->cache->set($cacheKey, true);
+           // Yii::$app->cache->set($cacheKey, true);
        // }
     }
 
