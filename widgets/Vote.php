@@ -37,12 +37,16 @@ class Vote extends Widget
     /**
      * @var string
      */
-    public $jsBeforeVote;
+    public $jsBeforeVote = "
+        $('#item-' + model + '-' + target).loading();
+    ";
 
     /**
      * @var string
      */
-    public $jsAfterVote;
+    public $jsAfterVote = "
+        $('#item-' + model + '-' + target).loading('stop');
+    ";
 
     /**
      * @var string
