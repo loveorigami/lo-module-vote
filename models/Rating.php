@@ -155,8 +155,8 @@ class Rating extends \lo\core\db\ActiveRecord
      */
     public static function updateRating($modelId, $targetId)
     {
-        $cacheKey = 'rating' . $modelId . 'target' . $targetId;
-        if (Yii::$app->cache->get($cacheKey) === false) {
+        /*$cacheKey = 'rating' . $modelId . 'target' . $targetId;
+        if (Yii::$app->cache->get($cacheKey) === false) {*/
             $likes = static::find()->where(['model_id' => $modelId, 'target_id' => $targetId, 'value' => self::VOTE_LIKE])->count();
             $dislikes = static::find()->where(['model_id' => $modelId, 'target_id' => $targetId, 'value' => self::VOTE_DISLIKE])->count();
             if ($likes + $dislikes !== 0) {
@@ -182,7 +182,7 @@ class Rating extends \lo\core\db\ActiveRecord
             $aggregateModel->rating = $rating;
             $aggregateModel->save();
             Yii::$app->cache->set($cacheKey, true);
-        }
+       // }
     }
 
     /**

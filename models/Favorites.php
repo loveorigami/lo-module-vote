@@ -85,8 +85,8 @@ class Favorites extends  \lo\core\db\ActiveRecord
      */
     public static function updateFavs($modelId, $targetId)
     {
-        $cacheKey = 'favs' . $modelId . 'target' . $targetId;
-        if (Yii::$app->cache->get($cacheKey) === false) {
+        /*$cacheKey = 'favs' . $modelId . 'target' . $targetId;
+        if (Yii::$app->cache->get($cacheKey) === false) {*/
             $favs = static::find()->where(['model_id' => $modelId, 'target_id' => $targetId])->count();
 
             $aggregateModel = AggregateRating::findOne([
@@ -101,7 +101,7 @@ class Favorites extends  \lo\core\db\ActiveRecord
             $aggregateModel->favs = $favs;
             $aggregateModel->save();
             Yii::$app->cache->set($cacheKey, true);
-        }
+       // }
     }
 
 }
