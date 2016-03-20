@@ -123,7 +123,7 @@ class Vote extends Widget
                     url: '$this->voteUrl', type: 'POST', dataType: 'json', cache: false,
                     data: { modelId: model, targetId: target, act: act },
                     beforeSend: function(jqXHR, settings) { $this->jsBeforeVote },
-                    success: function(data, textStatus, jqXHR) { $this->jsChangeCounters $this->jsShowMessage },
+                    success: function(data, textStatus, jqXHR) { $this->jsChangeCounters },
                     complete: function(jqXHR, textStatus) { $this->jsAfterVote },
                     error: function(jqXHR, textStatus, errorThrown) { $this->jsErrorVote }
                 });
@@ -134,7 +134,7 @@ class Vote extends Widget
                     url: '$this->favUrl', type: 'POST', dataType: 'json', cache: false,
                     data: { modelId: model, targetId: target, act: act },
                     beforeSend: function(jqXHR, settings) { $this->jsBeforeVote },
-                    success: function(data, textStatus, jqXHR) { $this->jsChangeCounters $this->jsShowMessage },
+                    success: function(data, textStatus, jqXHR) { $this->jsChangeCounters },
                     complete: function(jqXHR, textStatus) { $this->jsAfterVote },
                     error: function(jqXHR, textStatus, errorThrown) { $this->jsErrorVote }
                 });

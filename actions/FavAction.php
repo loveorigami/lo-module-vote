@@ -16,25 +16,31 @@ class FavAction extends Action
         if (Yii::$app->request->getIsAjax()) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             if (null === $modelId = (int)Yii::$app->request->post('modelId')) {
-                return ['content' => Yii::t('vote', 'modelId has not been sent')];
+                \Yii::$app->session->setFlash('error', Yii::t('vote', 'modelId has not been sent'));
+                return false;
             }
             if (null === $targetId = (int)Yii::$app->request->post('targetId')) {
-                return ['content' => Yii::t('vote', 'The purpose is not defined')];
+                \Yii::$app->session->setFlash('error', Yii::t('vote', 'The purpose is not defined'));
+                return false;
             }
             $act = Yii::$app->request->post('act');
             if (!in_array($act, ['fav-add', 'fav-del'], true)) {
-                return ['content' => Yii::t('vote', 'Wrong action')];
+                \Yii::$app->session->setFlash('error', Yii::t('vote', 'Wrong action'));
+                return false;
             }
 
             $userId = Yii::$app->user->getId();
             if ($userId === null && !Rating::getIsAllowGuests($modelId)) {
-                return ['content' => Yii::t('vote', 'Guests are not allowed to vote')];
+                \Yii::$app->session->setFlash('error', Yii::t('vote', 'Guests are not allowed to vote'));
+                return false;
             }
             if (!$userIp = Rating::compressIp(Yii::$app->request->getUserIP())) {
-                return ['content' => Yii::t('vote', 'The user is not recognized')];
+                \Yii::$app->session->setFlash('error', Yii::t('vote', 'The user is not recognized'));
+                return false;
             }
             if (!is_int($modelId)) {
-                return ['content' => Yii::t('vote', 'The model is not registered')];
+                \Yii::$app->session->setFlash('error', Yii::t('vote', 'The model is not registered'));
+                return false;
             }
 
             if (Rating::getIsAllowGuests($modelId)) {
@@ -43,10 +49,10 @@ class FavAction extends Action
                 $isVoted = Favorites::findOne(['model_id' => $modelId, 'target_id' => $targetId, 'user_id' => $userId]);
             }
 
-
             if(!is_null($isVoted) && $act == 'fav-del'){
                 $isVoted->delete();
-                return ['content' => Yii::t('vote', 'Item delete from our favorites'), 'type'=>'success', 'success' => true];
+                \Yii::$app->session->setFlash('success', Yii::t('vote', 'Item delete from our favorites'));
+                return ['success' => true];
             }
 
             if (is_null($isVoted)) {
@@ -56,12 +62,15 @@ class FavAction extends Action
                 $newVote->user_id = $userId;
                 $newVote->user_ip = $userIp;
                 if ($newVote->save()) {
-                    return ['content' => Yii::t('vote', 'Item added to our favorites'), 'type'=>'success', 'success' => true];
+                    \Yii::$app->session->setFlash('success', Yii::t('vote', 'Item added to our favorites'));
+                    return ['success' => true];
                 } else {
-                    return ['content' => Yii::t('vote', 'Validation error'), 'type'=>'warning'];
+                    \Yii::$app->session->setFlash('warning', Yii::t('vote', 'Validation error'));
+                    return false;
                 }
             } else {
-                return ['content' => Yii::t('vote', 'You have already added to favorites!'), 'type'=>'warning'];
+                \Yii::$app->session->setFlash('warning', Yii::t('vote', 'You have already added to favorites!'));
+                return false;
             }
         } else {
             throw new MethodNotAllowedHttpException(Yii::t('vote', 'Forbidden method'), 405);
