@@ -64,9 +64,6 @@ class Vote extends Widget
      * @var string
      */
     public $jsShowMessage = "
-        var n = Noty('vote');
-        $.noty.setText(n.options.id, data.content);
-        $.noty.setType(n.options.id, data.type);
         //jQuery('#vote-response-' + model + '-' + target).html(data.content);
     ";
 
