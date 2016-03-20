@@ -15,6 +15,7 @@ class VoteAction extends Action
         if (Yii::$app->request->getIsAjax()) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             if (null === $modelId = (int)Yii::$app->request->post('modelId')) {
+                \Yii::$app->session->setFlash('error', Yii::t('vote', 'modelId has not been sent'));
                 return ['content' => Yii::t('vote', 'modelId has not been sent')];
             }
             if (null === $targetId = (int)Yii::$app->request->post('targetId')) {
@@ -49,22 +50,28 @@ class VoteAction extends Action
                 $newVote->value = $value;
                 if ($newVote->save()) {
                     if ($value === Rating::VOTE_LIKE) {
+                        \Yii::$app->session->setFlash('success', Yii::t('vote', 'Your vote is accepted. Thanks!'));
                         return ['content' => Yii::t('vote', 'Your vote is accepted. Thanks!'), 'type'=>'success', 'success' => true];
                     } else {
+                        \Yii::$app->session->setFlash('success', Yii::t('vote', 'Thanks for your opinion'));
                         return ['content' => Yii::t('vote', 'Thanks for your opinion'), 'type'=>'success', 'success' => true];
                     }
                 } else {
+                    \Yii::$app->session->setFlash('error', Yii::t('vote', 'Validation error'));
                     return ['content' => Yii::t('vote', 'Validation error'), 'type'=>'error'];
                 }
             } else {
                 if ($isVoted->value !== $value && Rating::getIsAllowChangeVote($modelId)) {
                     $isVoted->value = $value;
                     if ($isVoted->save()) {
+                        \Yii::$app->session->setFlash('success', Yii::t('vote', 'Your vote has been changed. Thanks!'));
                         return ['content' => Yii::t('vote', 'Your vote has been changed. Thanks!'), 'type'=>'success','success' => true, 'changed' => true];
                     } else {
+                        \Yii::$app->session->setFlash('error', Yii::t('vote', 'Validation error'));
                         return ['content' => Yii::t('vote', 'Validation error'), 'type'=>'error'];
                     }
                 }
+                \Yii::$app->session->setFlash('warning', Yii::t('vote', 'You have already voted!'));
                 return ['content' => Yii::t('vote', 'You have already voted!'), 'type'=>'warning'];
             }
         } else {
