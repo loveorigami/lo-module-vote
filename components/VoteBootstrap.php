@@ -25,14 +25,14 @@ class VoteBootstrap implements BootstrapInterface
 		foreach ($models as $value) {
 			$modelId = Rating::getModelIdByName($value);
 			$modelName = Rating::getModelNameById($modelId);
-			Event::on($modelName::className(), $modelName::EVENT_INIT, function ($event) {
+			Event::on($modelName::class, $modelName::EVENT_INIT, function ($event) {
 			    if (null === $event->sender->getBehavior('rating')) {
 					$event->sender->attachBehavior('rating', [
-						'class' => RatingBehavior::className(),
+						'class' => RatingBehavior::class,
 					]);
 				}
 			});
-			Event::on($modelName::className(), $modelName::EVENT_AFTER_FIND, function ($event) {
+			Event::on($modelName::class, $modelName::EVENT_AFTER_FIND, function ($event) {
 				$modelId = Rating::getModelIdByName($event->sender->className());
 				$targetId = $event->sender->{$event->sender->primaryKey()[0]};
 	            Rating::updateRating($modelId, $targetId);

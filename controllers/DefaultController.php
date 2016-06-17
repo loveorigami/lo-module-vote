@@ -15,10 +15,10 @@ class DefaultController extends Controller
     {
         return [
             'vote' => [
-                'class' => VoteAction::className(),
+                'class' => VoteAction::class,
             ],
             'fav' => [
-                'class' => FavAction::className(),
+                'class' => FavAction::class,
             ]
         ];
     }

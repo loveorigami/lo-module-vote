@@ -29,7 +29,7 @@ class RatingBehavior extends Behavior
     public function getAggregate()
     {
         return $this->owner
-            ->hasOne(AggregateRating::className(), [
+            ->hasOne(AggregateRating::class, [
                 'target_id' => $this->owner->primaryKey()[0],
             ])
             ->onCondition([
@@ -43,7 +43,7 @@ class RatingBehavior extends Behavior
     public function getVoted()
     {
         return $this->owner
-            ->hasOne(Rating::className(), [
+            ->hasOne(Rating::class, [
                 'target_id' => $this->owner->primaryKey()[0],
             ])
             ->from(Rating::tableName() . ' r')
@@ -59,7 +59,7 @@ class RatingBehavior extends Behavior
     public function getFaved()
     {
         return $this->owner
-            ->hasOne(Favorites::className(), [
+            ->hasOne(Favorites::class, [
                 'target_id' => $this->owner->primaryKey()[0],
             ])
             ->from(Favorites::tableName() . ' f')

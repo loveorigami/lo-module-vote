@@ -68,7 +68,7 @@ class Rating extends \lo\core\db\ActiveRecord
      */
     public function metaClass()
     {
-        return RatingMeta::className();
+        return RatingMeta::class;
     }
 
     /**

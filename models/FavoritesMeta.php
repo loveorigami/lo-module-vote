@@ -21,7 +21,7 @@ class FavoritesMeta extends MetaFields
         return [
             "id_user" => [
                 "definition" => [
-                    "class" => \lo\core\db\fields\TextField::className(),
+                    "class" => \lo\core\db\fields\TextField::class,
                     "title" => Yii::t('backend', 'User'),
                     "showInGrid" => false,
                     "showInFilter" => true,

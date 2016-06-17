@@ -65,7 +65,7 @@ class Favorites extends  \lo\core\db\ActiveRecord
      */
     public function metaClass()
     {
-        return FavoritesMeta::className();
+        return FavoritesMeta::class;
     }
 
     /**
