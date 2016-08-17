@@ -18,9 +18,6 @@ use yii\base\InvalidParamException;
  */
 class Rating extends \lo\core\db\ActiveRecord
 {
-	
-	use \lo\core\rbac\ConstraintTrait;
-
     const STATUS_DRAFT = 0;
     const STATUS_PUBLISHED = 1;
 	
